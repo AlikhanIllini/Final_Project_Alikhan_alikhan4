@@ -5,14 +5,20 @@
 - Why: same domain, scoped growth; minimal re-learning
 
 # Wireframe Notes
-- v1 screens listed below; why they matter; anything risky/unclear.
+- Goal of v1 wireframes (Ultimate): Keep the Lite flow, add auth, tags, saved filters, and room for weekly email digest.
+- Screens included:
+    - login: required here (multi-user).
+    - dashboard: card grid + tags and saved filter dropdown.
+    - create/edit card: same core fields as Lite; add tags; get "last price" using API.
+    - empty/error: first-run + validation/network.
 
 # Branching Strategy
-- main (protected), develop (integration), feature/* per weekly topic,
-  release/* before demos, hotfix/* for urgent fixes.
+- Strategy chosen: Simple Gitflow (same as Lite) with extra feature branches.
+    - main (protected), develop, feature/, release/, hotfix/.
 
-# Branch Usage Reflections
-- Which branch I used for wireframes, what I pushed, any issues.
+ - Planned feature branches (Ultimate adds on top of Lite):
+    - feature/auth -> feature/tags -> feature/price-adapter -> feature/saved-filters -> feature/digest-email
+    - Continue to use: feature/models, feature/crud, feature/ui, feature/reporting
 
 # Django Setup
 - startproject folder name chosen: appserver; app name: cards — simple and clear.
