@@ -22,6 +22,8 @@
 
 # Django Setup
 - startproject folder name chosen: appserver; app name: cards — simple and clear.
+- startproject: appserver (same as Lite for continuity)
+- app name: cards (will expand with auth/tags later in Ultimate)
 
 # Virtual Environment Choice
 - Using Python venv because it's simple and works with PyCharm auto-detect.
