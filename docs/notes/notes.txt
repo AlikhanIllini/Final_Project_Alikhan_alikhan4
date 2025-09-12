@@ -1,0 +1,21 @@
+# Ideas & Selection Rationale
+- Assignment ideas: Stock Cards Lite
+- Final ideas: Stock Cards — Ultimate
+- Selected: Stock Cards Lite (Assignment), Stock Cards — Ultimate (Final)
+- Why: same domain, scoped growth; minimal re-learning
+
+# Wireframe Notes
+- v1 screens listed below; why they matter; anything risky/unclear.
+
+# Branching Strategy
+- main (protected), develop (integration), feature/* per weekly topic,
+  release/* before demos, hotfix/* for urgent fixes.
+
+# Branch Usage Reflections
+- Which branch I used for wireframes, what I pushed, any issues.
+
+# Django Setup
+- startproject folder name chosen: appserver; app name: cards — simple and clear.
+
+# Virtual Environment Choice
+- Using Python venv because it's simple and works with PyCharm auto-detect.
