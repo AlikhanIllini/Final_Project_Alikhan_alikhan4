@@ -2,8 +2,8 @@ asgiref==3.9.1
 Django==5.2.6
 sqlparse==0.5.3
 
-# Stock price API
-yfinance==0.2.49
+# Stock price API - using latest version with better rate limit handling
+yfinance==0.2.66
 
 # Alternative stock data source (backup)
 pandas-datareader==0.10.0

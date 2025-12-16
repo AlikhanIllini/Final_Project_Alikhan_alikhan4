@@ -54,19 +54,19 @@ class StockPriceAdapter:
             cached_data['source'] = 'cache'
             return cached_data
 
-        # Try multiple methods in order
+        # Try multiple methods in order (prioritize fastest, most reliable)
         data = None
 
-        # Method 1: Try yf.download (most reliable)
-        data = self._try_download_method(ticker)
+        # Method 1: Try fast_info first (most reliable with yfinance 0.2.66+)
+        data = self._try_fast_info_method(ticker)
 
-        # Method 2: If download fails, try history method
+        # Method 2: If fast_info fails, try download method
+        if not data:
+            data = self._try_download_method(ticker)
+
+        # Method 3: Last resort - history method
         if not data:
             data = self._try_history_method(ticker)
-
-        # Method 3: Try fast_info (lightweight)
-        if not data:
-            data = self._try_fast_info_method(ticker)
 
         # If we got data from any method, cache it
         if data:
@@ -138,13 +138,13 @@ class StockPriceAdapter:
             return None
 
     def _try_fast_info_method(self, ticker):
-        """Try using Ticker.fast_info (lightweight API)."""
+        """Try using Ticker.fast_info (lightweight API) - MOST RELIABLE with yfinance 0.2.66+."""
         try:
             stock = yf.Ticker(ticker)
             fast_info = stock.fast_info
 
-            # fast_info has last_price
-            price = fast_info.get('lastPrice') or fast_info.get('regularMarketPrice')
+            # fast_info has last_price (most reliable in latest version)
+            price = fast_info.last_price
 
             if not price:
                 return None
