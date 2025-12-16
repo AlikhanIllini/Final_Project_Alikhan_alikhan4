@@ -52,28 +52,38 @@ class StockPriceAdapter:
             cached_data['source'] = 'cache'
             return cached_data
 
-        # Fetch from API
+        # Fetch from API using historical data (more reliable than info)
         try:
             stock = yf.Ticker(ticker)
-            info = stock.info
 
-            # Get current price (try multiple fields as yfinance can be inconsistent)
-            price = (
-                info.get('currentPrice') or
-                info.get('regularMarketPrice') or
-                info.get('previousClose')
-            )
+            # Get most recent day's data
+            hist = stock.history(period='1d')
 
-            if price is None:
+            if hist.empty:
                 logger.warning(f"No price data available for {ticker}")
                 return None
 
+            # Get the latest close price
+            latest = hist.iloc[-1]
+            price = latest['Close']
+            volume = int(latest['Volume']) if 'Volume' in latest else 0
+
+            # Try to get company name from info (but don't fail if it errors)
+            company_name = ''
+            exchange = ''
+            try:
+                info = stock.info
+                company_name = info.get('longName', info.get('shortName', ''))
+                exchange = info.get('exchange', '')
+            except Exception as e:
+                logger.warning(f"Could not fetch company info for {ticker}: {str(e)}")
+
             data = {
                 'price': Decimal(str(price)),
-                'volume': info.get('volume', 0),
+                'volume': volume,
                 'timestamp': timezone.now(),
-                'company_name': info.get('longName', info.get('shortName', '')),
-                'exchange': info.get('exchange', ''),
+                'company_name': company_name,
+                'exchange': exchange,
                 'source': 'api'
             }
 
@@ -143,10 +153,11 @@ class StockPriceAdapter:
 
         try:
             stock = yf.Ticker(ticker)
-            info = stock.info
+            # Try to get recent history - more reliable than info
+            hist = stock.history(period='5d')
 
-            # Check if we got meaningful data
-            return 'symbol' in info or 'shortName' in info or 'currentPrice' in info
+            # Valid if we got any data
+            return not hist.empty
 
         except Exception as e:
             logger.error(f"Ticker validation failed for {ticker}: {str(e)}")
@@ -167,17 +178,31 @@ class StockPriceAdapter:
 
         try:
             stock = yf.Ticker(ticker)
-            info = stock.info
 
-            return {
-                'ticker': ticker,
-                'company_name': info.get('longName', info.get('shortName', '')),
-                'sector': info.get('sector', ''),
-                'industry': info.get('industry', ''),
-                'exchange': info.get('exchange', ''),
-                'currency': info.get('currency', 'USD'),
-                'market_cap': info.get('marketCap'),
-            }
+            # Try to get info, but use basic data if it fails
+            try:
+                info = stock.info
+                return {
+                    'ticker': ticker,
+                    'company_name': info.get('longName', info.get('shortName', ticker)),
+                    'sector': info.get('sector', ''),
+                    'industry': info.get('industry', ''),
+                    'exchange': info.get('exchange', ''),
+                    'currency': info.get('currency', 'USD'),
+                    'market_cap': info.get('marketCap'),
+                }
+            except Exception as info_error:
+                logger.warning(f"Could not fetch full info for {ticker}, using basic data: {str(info_error)}")
+                # Return basic info without requiring info API
+                return {
+                    'ticker': ticker,
+                    'company_name': ticker,
+                    'sector': '',
+                    'industry': '',
+                    'exchange': '',
+                    'currency': 'USD',
+                    'market_cap': None,
+                }
 
         except Exception as e:
             logger.error(f"Failed to fetch info for {ticker}: {str(e)}")

@@ -60,7 +60,7 @@ A web application for organizing and tracking U.S. stocks using a card-based int
    ```
    This creates:
    - Test user: `testuser` / `testpass123`
-   - Admin user: `admin` / `admin123`
+   - Admin user: `infoadmins` / `uiucinfo`
    - Sample stock cards with live prices
 
 5. **Run the development server**
@@ -71,6 +71,7 @@ A web application for organizing and tracking U.S. stocks using a card-based int
 6. **Access the application**
    - Main app: http://127.0.0.1:8000/
    - Admin panel: http://127.0.0.1:8000/admin/
+   - Admin login: `infoadmins` / `uiucinfo`
 
 ## Usage
 
@@ -100,6 +101,17 @@ python3 manage.py send_weekly_digest
 For testing:
 ```bash
 python3 manage.py send_weekly_digest --test-email your@email.com
+```
+
+**Note:** By default, emails are printed to the console (terminal) for development. To actually send emails, configure SMTP settings in `appserver/settings.py`:
+
+```python
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Or your email provider
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-app-password'
 ```
 
 The digest includes:
@@ -185,6 +197,53 @@ python3 manage.py check
 ```bash
 python3 manage.py makemigrations
 python3 manage.py migrate
+```
+
+## Troubleshooting
+
+### Stock Prices Not Loading
+
+If stock prices fail to load:
+
+1. **Rate Limits**: Yahoo Finance may rate-limit requests. Wait a few minutes and try again.
+
+2. **Refresh Prices**: Run the refresh script:
+   ```bash
+   python3 refresh_prices.py
+   ```
+
+3. **Manual Entry**: Use the "Add Price Manually" feature on card detail pages.
+
+4. **Check Logs**: Look for error messages in the terminal where the server is running.
+
+### Email Not Sending
+
+The default configuration uses **console backend** which prints emails to the terminal instead of sending them. This is perfect for development and presentations.
+
+- When you run `send_weekly_digest`, check your terminal for the email content
+- To actually send emails, configure SMTP in `settings.py` (see Weekly Digest section)
+
+### Admin Login Issues
+
+If you can't login to admin:
+
+1. Ensure admin user is created:
+   ```bash
+   python3 update_admin.py
+   ```
+
+2. Credentials:
+   - Username: `infoadmins`
+   - Password: `uiucinfo`
+
+### Database Issues
+
+If you encounter database errors, reset the database:
+
+```bash
+rm db.sqlite3
+python3 manage.py migrate
+python3 setup_test_data.py
 ```
 
 ## Author

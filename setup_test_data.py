@@ -31,11 +31,16 @@ def setup_test_data():
         print(f"✓ Created user: {username} / {password}")
 
     # Create superuser
-    admin_username = "admin"
-    admin_password = "admin123"
+    admin_username = "infoadmins"
+    admin_password = "uiucinfo"
 
     if User.objects.filter(username=admin_username).exists():
         print(f"Admin user '{admin_username}' already exists.")
+        admin = User.objects.get(username=admin_username)
+        admin.set_password(admin_password)
+        admin.is_superuser = True
+        admin.is_staff = True
+        admin.save()
     else:
         User.objects.create_superuser(admin_username, "admin@example.com", admin_password)
         print(f"✓ Created admin: {admin_username} / {admin_password}")
