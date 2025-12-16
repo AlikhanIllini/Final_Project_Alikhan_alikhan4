@@ -1,3 +1,16 @@
 asgiref==3.9.1
 Django==5.2.6
 sqlparse==0.5.3
+
+# Stock price API
+yfinance==0.2.49
+
+# Timezone handling
+pytz==2024.2
+
+# Environment variables
+python-decouple==3.8
+
+# HTTP requests (dependency of yfinance but explicitly listed)
+requests==2.32.3
+
