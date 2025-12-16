@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Update admin credentials for presentation.
-Creates admin user: infoadmins / uiucinfo
+Creates admin user: mohitg2 / graingerlibrary
 """
 
 import os
@@ -13,12 +13,13 @@ django.setup()
 from django.contrib.auth.models import User
 
 # Remove old admin if exists
+User.objects.filter(username='infoadmins').delete()
 User.objects.filter(username='admin').delete()
 
 # Create new admin with presentation credentials
-username = "infoadmins"
-password = "uiucinfo"
-email = "infoadmins@example.com"
+username = "mohitg2"
+password = "graingerlibrary"
+email = "mohitg2@example.com"
 
 if User.objects.filter(username=username).exists():
     admin_user = User.objects.get(username=username)

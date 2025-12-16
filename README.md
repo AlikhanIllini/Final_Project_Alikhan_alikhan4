@@ -60,7 +60,7 @@ A web application for organizing and tracking U.S. stocks using a card-based int
    ```
    This creates:
    - Test user: `testuser` / `testpass123`
-   - Admin user: `infoadmins` / `uiucinfo`
+   - Admin user: `mohitg2` / `graingerlibrary`
    - Sample stock cards with live prices
 
 5. **Run the development server**
@@ -71,7 +71,7 @@ A web application for organizing and tracking U.S. stocks using a card-based int
 6. **Access the application**
    - Main app: http://127.0.0.1:8000/
    - Admin panel: http://127.0.0.1:8000/admin/
-   - Admin login: `infoadmins` / `uiucinfo`
+   - Admin login: `mohitg2` / `graingerlibrary`
 
 ## Usage
 
@@ -233,8 +233,8 @@ If you can't login to admin:
    ```
 
 2. Credentials:
-   - Username: `infoadmins`
-   - Password: `uiucinfo`
+   - Username: `mohitg2`
+   - Password: `graingerlibrary`
 
 ### Database Issues
 

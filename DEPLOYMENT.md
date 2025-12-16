@@ -108,7 +108,7 @@ python3 -c 'from django.core.management.utils import get_random_secret_key; prin
 ```bash
 python manage.py createsuperuser
 ```
-Enter: `infoadmins` / `uiucinfo`
+Enter: `mohitg2` / `graingerlibrary`
 
 Or the build.sh script already does this automatically!
 
@@ -116,7 +116,7 @@ Or the build.sh script already does this automatically!
 
 - **Main App:** `https://your-app-name.onrender.com/`
 - **Admin:** `https://your-app-name.onrender.com/admin/`
-- **Login:** `infoadmins` / `uiucinfo`
+- **Login:** `mohitg2` / `graingerlibrary`
 
 ---
 

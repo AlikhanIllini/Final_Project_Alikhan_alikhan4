@@ -72,7 +72,7 @@
    - Deploys in 3-5 minutes
    - Live at: `https://your-app.railway.app`
 
----
+**Admin:** `mohitg2` / `graingerlibrary` (auto-created)
 
 ## Comparison
 
@@ -103,7 +103,7 @@
 
 **Admin panel:** `https://your-app-name.onrender.com/admin/`
 
-**Login:** `infoadmins` / `uiucinfo`
+**Login:** `mohitg2` / `graingerlibrary`
 
 ---
 

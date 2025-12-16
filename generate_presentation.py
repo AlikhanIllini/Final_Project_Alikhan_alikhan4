@@ -62,10 +62,10 @@ def add_title_slide(prs):
     # Author info
     author_box = slide.shapes.add_textbox(Inches(1), Inches(7.5), Inches(14), Inches(1))
     author_frame = author_box.text_frame
-    author_text = "Alikhan\nINFO Semester Project • December 2025\n\ngithub.com/AlikhanIllini/Final_Project_Alikhan_alikhan4"
+    author_text = "Alikhan\nINFO Semester Project • December 2025\n\nAdmin: mohitg2 / graingerlibrary\ngithub.com/AlikhanIllini/Final_Project_Alikhan_alikhan4"
     author_frame.text = author_text
     author_para = author_frame.paragraphs[0]
-    author_para.font.size = Pt(16)
+    author_para.font.size = Pt(14)
     author_para.font.color.rgb = DARK_GRAY
     author_para.alignment = PP_ALIGN.CENTER
 
