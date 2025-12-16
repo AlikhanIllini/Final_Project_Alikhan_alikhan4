@@ -14,3 +14,15 @@ python-decouple==3.8
 # HTTP requests (dependency of yfinance but explicitly listed)
 requests==2.32.3
 
+# Production server
+gunicorn==23.0.0
+
+# PostgreSQL adapter (for production)
+psycopg2-binary==2.9.10
+
+# Whitenoise for static files
+whitenoise==6.8.2
+
+# Database URL parser
+dj-database-url==2.2.0
+
