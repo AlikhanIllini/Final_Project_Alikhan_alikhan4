@@ -5,6 +5,9 @@ sqlparse==0.5.3
 # Stock price API
 yfinance==0.2.49
 
+# Alternative stock data source (backup)
+pandas-datareader==0.10.0
+
 # Timezone handling
 pytz==2024.2
 

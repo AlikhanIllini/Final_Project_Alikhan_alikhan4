@@ -1,6 +1,6 @@
 """
 Stock price adapter with caching and manual fallback.
-Uses yfinance for fetching U.S. stock prices.
+Uses yfinance for fetching U.S. stock prices with multiple fallback methods.
 """
 
 import yfinance as yf
@@ -9,6 +9,7 @@ from django.core.cache import cache
 from django.utils import timezone
 from decimal import Decimal
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,8 @@ logger = logging.getLogger(__name__)
 class StockPriceAdapter:
     """
     Adapter for fetching stock prices with built-in caching.
-    Falls back to manual entry when API fails or rate limits are reached.
+    Uses multiple methods to ensure reliability.
+    Falls back to manual entry when all methods fail.
     """
 
     CACHE_TIMEOUT = 60 * 15  # 15 minutes cache
@@ -26,7 +28,7 @@ class StockPriceAdapter:
 
     def get_stock_price(self, ticker):
         """
-        Get current stock price for a ticker.
+        Get current stock price for a ticker using multiple fallback methods.
 
         Args:
             ticker (str): Stock ticker symbol (e.g., 'AAPL')
@@ -37,9 +39,9 @@ class StockPriceAdapter:
                 'volume': int,
                 'timestamp': datetime,
                 'company_name': str,
-                'source': 'api' or 'cache' or 'error'
+                'source': 'api' or 'cache'
             }
-            Returns None if fetch fails
+            Returns None if all methods fail
         """
         ticker = ticker.upper().strip()
 
@@ -52,49 +54,111 @@ class StockPriceAdapter:
             cached_data['source'] = 'cache'
             return cached_data
 
-        # Fetch from API using historical data (more reliable than info)
+        # Try multiple methods in order
+        data = None
+
+        # Method 1: Try yf.download (most reliable)
+        data = self._try_download_method(ticker)
+
+        # Method 2: If download fails, try history method
+        if not data:
+            data = self._try_history_method(ticker)
+
+        # Method 3: Try fast_info (lightweight)
+        if not data:
+            data = self._try_fast_info_method(ticker)
+
+        # If we got data from any method, cache it
+        if data:
+            cache.set(cache_key, data, self.CACHE_TIMEOUT)
+            logger.info(f"Successfully fetched price for {ticker}: ${data['price']}")
+            return data
+
+        logger.error(f"All methods failed for {ticker}")
+        return None
+
+    def _try_download_method(self, ticker):
+        """Try using yf.download method."""
         try:
-            stock = yf.Ticker(ticker)
+            # Download with minimal output
+            data = yf.download(ticker, period='1d', progress=False, show_errors=False)
 
-            # Get most recent day's data
-            hist = stock.history(period='1d')
-
-            if hist.empty:
-                logger.warning(f"No price data available for {ticker}")
+            if data.empty:
                 return None
 
-            # Get the latest close price
-            latest = hist.iloc[-1]
+            # Get latest data
+            latest = data.iloc[-1]
             price = latest['Close']
             volume = int(latest['Volume']) if 'Volume' in latest else 0
 
-            # Try to get company name from info (but don't fail if it errors)
-            company_name = ''
-            exchange = ''
+            # Get company name separately (optional)
+            company_name = ticker  # Default to ticker
             try:
-                info = stock.info
-                company_name = info.get('longName', info.get('shortName', ''))
-                exchange = info.get('exchange', '')
-            except Exception as e:
-                logger.warning(f"Could not fetch company info for {ticker}: {str(e)}")
+                stock = yf.Ticker(ticker)
+                info = stock.fast_info
+                # fast_info doesn't have company name, use ticker
+            except:
+                pass
 
-            data = {
+            return {
                 'price': Decimal(str(price)),
                 'volume': volume,
                 'timestamp': timezone.now(),
                 'company_name': company_name,
-                'exchange': exchange,
+                'exchange': '',
                 'source': 'api'
             }
-
-            # Cache the result
-            cache.set(cache_key, data, self.CACHE_TIMEOUT)
-            logger.info(f"Successfully fetched price for {ticker}: ${price}")
-
-            return data
-
         except Exception as e:
-            logger.error(f"Failed to fetch price for {ticker}: {str(e)}")
+            logger.debug(f"Download method failed for {ticker}: {str(e)}")
+            return None
+
+    def _try_history_method(self, ticker):
+        """Try using Ticker.history method."""
+        try:
+            stock = yf.Ticker(ticker)
+            hist = stock.history(period='1d')
+
+            if hist.empty:
+                return None
+
+            latest = hist.iloc[-1]
+            price = latest['Close']
+            volume = int(latest['Volume']) if 'Volume' in latest else 0
+
+            return {
+                'price': Decimal(str(price)),
+                'volume': volume,
+                'timestamp': timezone.now(),
+                'company_name': ticker,
+                'exchange': '',
+                'source': 'api'
+            }
+        except Exception as e:
+            logger.debug(f"History method failed for {ticker}: {str(e)}")
+            return None
+
+    def _try_fast_info_method(self, ticker):
+        """Try using Ticker.fast_info (lightweight API)."""
+        try:
+            stock = yf.Ticker(ticker)
+            fast_info = stock.fast_info
+
+            # fast_info has last_price
+            price = fast_info.get('lastPrice') or fast_info.get('regularMarketPrice')
+
+            if not price:
+                return None
+
+            return {
+                'price': Decimal(str(price)),
+                'volume': 0,  # fast_info doesn't always have volume
+                'timestamp': timezone.now(),
+                'company_name': ticker,
+                'exchange': '',
+                'source': 'api'
+            }
+        except Exception as e:
+            logger.debug(f"Fast info method failed for {ticker}: {str(e)}")
             return None
 
     def get_historical_prices(self, ticker, days=30):
@@ -112,20 +176,25 @@ class StockPriceAdapter:
         ticker = ticker.upper().strip()
 
         try:
-            stock = yf.Ticker(ticker)
+            # Use download method for better reliability
             end_date = datetime.now()
             start_date = end_date - timedelta(days=days)
 
-            # Fetch historical data
-            hist = stock.history(start=start_date, end=end_date)
+            data = yf.download(
+                ticker,
+                start=start_date,
+                end=end_date,
+                progress=False,
+                show_errors=False
+            )
 
-            if hist.empty:
+            if data.empty:
                 logger.warning(f"No historical data for {ticker}")
                 return []
 
             # Convert to list of dicts
             historical_data = []
-            for date, row in hist.iterrows():
+            for date, row in data.iterrows():
                 historical_data.append({
                     'date': date,
                     'price': Decimal(str(row['Close'])),
@@ -152,12 +221,11 @@ class StockPriceAdapter:
         ticker = ticker.upper().strip()
 
         try:
-            stock = yf.Ticker(ticker)
-            # Try to get recent history - more reliable than info
-            hist = stock.history(period='5d')
+            # Try download method - quickest validation
+            data = yf.download(ticker, period='5d', progress=False, show_errors=False)
 
             # Valid if we got any data
-            return not hist.empty
+            return not data.empty
 
         except Exception as e:
             logger.error(f"Ticker validation failed for {ticker}: {str(e)}")
