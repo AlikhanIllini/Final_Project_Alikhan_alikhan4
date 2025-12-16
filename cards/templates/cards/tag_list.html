@@ -1,0 +1,124 @@
+{% extends 'cards/base.html' %}
+
+{% block title %}Tags - Stock Cards{% endblock %}
+
+{% block content %}
+<div class="tags-container">
+    <div class="tags-header">
+        <h1>Your Tags</h1>
+        <a href="{% url 'tag_create' %}" class="btn btn-primary">+ Create Tag</a>
+    </div>
+
+    {% if tags %}
+        <div class="tags-grid">
+            {% for tag in tags %}
+                <div class="tag-card">
+                    <div class="tag-preview" style="background-color: {{ tag.color }};">
+                        <span class="tag-name">{{ tag.name }}</span>
+                    </div>
+                    <div class="tag-info">
+                        <p class="tag-meta">Used in {{ tag.stock_cards.count }} cards</p>
+                    </div>
+                    <div class="tag-actions">
+                        <a href="{% url 'tag_edit' tag.id %}" class="btn-link">Edit</a>
+                        <a href="{% url 'tag_delete' tag.id %}" class="btn-link text-danger">Delete</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>No tags yet!</h2>
+            <p>Create tags to organize your stock cards.</p>
+            <a href="{% url 'tag_create' %}" class="btn btn-primary">+ Create Your First Tag</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .tags-container {
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+
+    .tags-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .tags-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .tag-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .tag-preview {
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .tag-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .tag-info {
+        padding: 1rem;
+    }
+
+    .tag-meta {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .tag-actions {
+        display: flex;
+        gap: 1rem;
+        padding: 0 1rem 1rem 1rem;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 1rem;
+    }
+
+    .btn-link {
+        color: #3b82f6;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    .text-danger {
+        color: #dc2626 !important;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state h2 {
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #9ca3af;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,310 @@
+{% extends 'cards/base.html' %}
+
+{% block title %}{{ card.stock.ticker }} - Stock Cards{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+        <div>
+            <h1>{{ card.stock.ticker }}</h1>
+            <p class="company-name">{{ card.stock.company_name|default:"" }}</p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'card_edit' card.id %}" class="btn btn-secondary">Edit Card</a>
+            <a href="{% url 'refresh_price' card.id %}" class="btn btn-secondary">🔄 Refresh Price</a>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <!-- Current Price -->
+        <div class="detail-card">
+            <h3>Current Price</h3>
+            {% if latest_price %}
+                <p class="price-large">${{ latest_price.price }}</p>
+                <p class="price-meta">
+                    Last updated: {{ latest_price.timestamp|date:"M d, Y H:i" }}<br>
+                    Source: {{ latest_price.get_source_display }}
+                    {% if latest_price.volume %}
+                        <br>Volume: {{ latest_price.volume|floatformat:0 }}
+                    {% endif %}
+                </p>
+            {% else %}
+                <p class="price-empty">No price data available</p>
+                <a href="{% url 'manual_price' card.id %}" class="btn btn-primary">Add Price Manually</a>
+            {% endif %}
+        </div>
+
+        <!-- Price Changes -->
+        <div class="detail-card">
+            <h3>Price Changes</h3>
+            {% if price_change_7d is not None %}
+                <div class="price-change {% if price_change_7d >= 0 %}positive{% else %}negative{% endif %}">
+                    <span class="change-label">7 Days:</span>
+                    <span class="change-value">{{ price_change_7d|floatformat:2 }}%</span>
+                </div>
+            {% endif %}
+            {% if price_change_30d is not None %}
+                <div class="price-change {% if price_change_30d >= 0 %}positive{% else %}negative{% endif %}">
+                    <span class="change-label">30 Days:</span>
+                    <span class="change-value">{{ price_change_30d|floatformat:2 }}%</span>
+                </div>
+            {% endif %}
+            {% if price_change_7d is None and price_change_30d is None %}
+                <p class="price-meta">Not enough data to calculate changes</p>
+            {% endif %}
+        </div>
+
+        <!-- Card Details -->
+        <div class="detail-card">
+            <h3>Card Details</h3>
+            <dl>
+                <dt>Priority:</dt>
+                <dd><span class="priority-badge priority-{{ card.priority }}">{{ card.get_priority_display }}</span></dd>
+
+                {% if card.target_price %}
+                    <dt>Target Price:</dt>
+                    <dd>${{ card.target_price }}</dd>
+                {% endif %}
+
+                <dt>Created:</dt>
+                <dd>{{ card.created_at|date:"M d, Y" }}</dd>
+
+                <dt>Last Updated:</dt>
+                <dd>{{ card.updated_at|date:"M d, Y H:i" }}</dd>
+
+                <dt>Status:</dt>
+                <dd>{% if card.is_archived %}Archived{% else %}Active{% endif %}</dd>
+            </dl>
+        </div>
+
+        <!-- Tags -->
+        <div class="detail-card">
+            <h3>Tags</h3>
+            {% if card.tags.all %}
+                <div class="tags-list">
+                    {% for tag in card.tags.all %}
+                        <span class="tag" style="background-color: {{ tag.color }}20; border-color: {{ tag.color }};">
+                            {{ tag.name }}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="price-meta">No tags assigned</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Notes -->
+    {% if card.notes %}
+        <div class="detail-card notes-card">
+            <h3>Notes</h3>
+            <p class="notes-text">{{ card.notes }}</p>
+        </div>
+    {% endif %}
+
+    <!-- Price History -->
+    <div class="detail-card">
+        <h3>Price History</h3>
+        {% if price_history %}
+            <table class="price-history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th>Volume</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for snapshot in price_history %}
+                        <tr>
+                            <td>{{ snapshot.timestamp|date:"M d, Y H:i" }}</td>
+                            <td>${{ snapshot.price }}</td>
+                            <td>{{ snapshot.volume|default:"—"|floatformat:0 }}</td>
+                            <td>{{ snapshot.get_source_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="price-meta">No price history available</p>
+        {% endif %}
+    </div>
+
+    <!-- Actions -->
+    <div class="detail-actions">
+        <a href="{% url 'card_archive' card.id %}" class="btn btn-outline">
+            {% if card.is_archived %}Unarchive Card{% else %}Archive Card{% endif %}
+        </a>
+        <a href="{% url 'card_delete' card.id %}" class="btn btn-danger">Delete Card</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+    .detail-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+    }
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 2rem;
+    }
+
+    .detail-header h1 {
+        font-size: 2.5rem;
+        margin: 0;
+    }
+
+    .company-name {
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin: 0.5rem 0 0 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .detail-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .detail-card h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #374151;
+    }
+
+    .price-large {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #059669;
+        margin: 0;
+    }
+
+    .price-meta {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .price-change {
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .price-change.positive {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .price-change.negative {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .change-label {
+        font-weight: 500;
+    }
+
+    .change-value {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    dl {
+        margin: 0;
+    }
+
+    dt {
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+
+    dd {
+        margin-bottom: 1rem;
+        color: #1f2937;
+    }
+
+    .tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag {
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        border: 1px solid;
+    }
+
+    .notes-card {
+        grid-column: 1 / -1;
+    }
+
+    .notes-text {
+        color: #4b5563;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    .price-history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .price-history-table th {
+        text-align: left;
+        padding: 0.75rem;
+        background: #f9fafb;
+        border-bottom: 2px solid #e5e7eb;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .price-history-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .detail-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .btn-danger {
+        background: #dc2626;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .btn-danger:hover {
+        background: #b91c1c;
+    }
+</style>
+{% endblock %}
+

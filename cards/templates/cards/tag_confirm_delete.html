@@ -1,0 +1,57 @@
+{% extends 'cards/base.html' %}
+
+{% block title %}Delete Tag - Stock Cards{% endblock %}
+
+{% block content %}
+<div class="confirm-container">
+    <h1>Delete Tag</h1>
+
+    <div class="confirm-card">
+        <p class="warning-text">
+            Are you sure you want to delete the tag <strong>"{{ tag.name }}"</strong>?
+        </p>
+        <p class="info-text">
+            This tag is used in {{ tag.stock_cards.count }} stock card(s).
+            Deleting it will remove it from all cards.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="confirm-actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete Tag</button>
+                <a href="{% url 'tag_list' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .confirm-container {
+        max-width: 500px;
+        margin: 4rem auto;
+    }
+
+    .confirm-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .warning-text {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-text {
+        color: #6b7280;
+        margin-bottom: 2rem;
+    }
+
+    .confirm-actions {
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}
+

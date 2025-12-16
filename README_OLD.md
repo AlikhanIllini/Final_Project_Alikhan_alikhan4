@@ -1,0 +1,6 @@
+# Stock Cards
+Stock Cards is a web application for organizing and tracking U.S. stocks using a card-based interface. Each stock is represented as a card that stores core market data along with user-managed information such as notes, tags, and saved filters. The app is designed for clarity and structure, not real-time trading or advanced analysis.
+<br>
+The system supports multiple users, with all stock cards and views scoped per user. Stock prices are retrieved through a free-tier market data adapter that includes caching and a manual fallback to ensure stable behavior when API rate limits are reached. Each card maintains a simple price history using stored snapshots, allowing users to review recent changes without complex charts.
+<br>
+Stock Cards is built with Django and a relational database, with models representing users, stocks, cards, tags, saved filters, and price snapshots. A weekly email digest summarizes notable movements across a user’s tracked stocks. The project focuses on clean data modeling, predictable performance, and incremental feature expansion, making it a practical and maintainable personal project.

@@ -1,0 +1,112 @@
+{% extends 'cards/base.html' %}
+
+{% block title %}Welcome - Stock Cards{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>📈 Stock Cards</h1>
+    <p class="subtitle">Organize and track your U.S. stocks with a clean, card-based interface</p>
+
+    <div class="hero-features">
+        <div class="feature">
+            <h3>🎯 Card-Based Organization</h3>
+            <p>Each stock gets its own card with notes, tags, and priority</p>
+        </div>
+        <div class="feature">
+            <h3>📊 Price Tracking</h3>
+            <p>Automatic price updates with historical snapshots</p>
+        </div>
+        <div class="feature">
+            <h3>🏷️ Tags & Filters</h3>
+            <p>Categorize stocks and save your favorite filter combinations</p>
+        </div>
+        <div class="feature">
+            <h3>📧 Weekly Digest</h3>
+            <p>Email summaries of notable price movements</p>
+        </div>
+    </div>
+
+    <div class="cta-buttons">
+        <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+        <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+    </div>
+</div>
+
+<style>
+    .hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #1f2937;
+    }
+
+    .subtitle {
+        font-size: 1.25rem;
+        color: #6b7280;
+        margin-bottom: 3rem;
+    }
+
+    .hero-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .feature {
+        padding: 1.5rem;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .feature h3 {
+        margin-bottom: 0.5rem;
+        color: #374151;
+    }
+
+    .feature p {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #3b82f6;
+        border: 2px solid #3b82f6;
+    }
+
+    .btn-secondary:hover {
+        background: #eff6ff;
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,298 @@
+{% extends 'cards/base.html' %}
+
+{% block title %}Dashboard - Stock Cards{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Your Stock Cards</h1>
+    <a href="{% url 'card_create' %}" class="btn btn-primary">+ Add Stock Card</a>
+</div>
+
+<!-- Filters -->
+<div class="filters-section">
+    <form method="get" class="filters-form">
+        <input type="text" name="search" placeholder="Search stocks..." value="{{ search_query }}" class="search-input">
+
+        <select name="priority" class="filter-select">
+            <option value="">All Priorities</option>
+            <option value="1" {% if current_priority == '1' %}selected{% endif %}>High</option>
+            <option value="2" {% if current_priority == '2' %}selected{% endif %}>Medium</option>
+            <option value="3" {% if current_priority == '3' %}selected{% endif %}>Low</option>
+        </select>
+
+        <select name="tag" class="filter-select">
+            <option value="">All Tags</option>
+            {% for tag in user_tags %}
+                <option value="{{ tag.id }}" {% if current_tag == tag.id|stringformat:"s" %}selected{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="sort" class="filter-select">
+            <option value="priority" {% if current_sort == 'priority' %}selected{% endif %}>Priority</option>
+            <option value="updated_at" {% if current_sort == 'updated_at' %}selected{% endif %}>Recently Updated</option>
+            <option value="created_at" {% if current_sort == 'created_at' %}selected{% endif %}>Recently Created</option>
+            <option value="ticker" {% if current_sort == 'ticker' %}selected{% endif %}>Ticker</option>
+        </select>
+
+        <label class="checkbox-label">
+            <input type="checkbox" name="archived" value="true" {% if show_archived %}checked{% endif %}>
+            Show Archived
+        </label>
+
+        <button type="submit" class="btn btn-secondary">Apply Filters</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline">Clear</a>
+    </form>
+</div>
+
+<!-- Cards Grid -->
+<div class="cards-grid">
+    {% if cards %}
+        {% for card in cards %}
+            <div class="stock-card {% if card.is_archived %}archived{% endif %} priority-{{ card.priority }}">
+                <div class="card-header">
+                    <div>
+                        <h3 class="ticker">{{ card.stock.ticker }}</h3>
+                        <p class="company-name">{{ card.stock.company_name|default:"" }}</p>
+                    </div>
+                    <div class="priority-badge priority-{{ card.priority }}">
+                        {{ card.get_priority_display }}
+                    </div>
+                </div>
+
+                <div class="card-price">
+                    {% with latest=card.get_latest_price %}
+                        {% if latest %}
+                            <span class="price">${{ latest.price }}</span>
+                            <span class="price-source">{{ latest.get_source_display }}</span>
+                        {% else %}
+                            <span class="price-empty">No price data</span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                {% if card.notes %}
+                    <p class="card-notes">{{ card.notes|truncatewords:15 }}</p>
+                {% endif %}
+
+                {% if card.tags.all %}
+                    <div class="card-tags">
+                        {% for tag in card.tags.all %}
+                            <span class="tag" style="background-color: {{ tag.color }}20; border-color: {{ tag.color }};">
+                                {{ tag.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="card-actions">
+                    <a href="{% url 'card_detail' card.id %}" class="btn-link">View</a>
+                    <a href="{% url 'card_edit' card.id %}" class="btn-link">Edit</a>
+                    <a href="{% url 'card_archive' card.id %}" class="btn-link">
+                        {% if card.is_archived %}Unarchive{% else %}Archive{% endif %}
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h2>No stock cards yet!</h2>
+            <p>Create your first stock card to start tracking.</p>
+            <a href="{% url 'card_create' %}" class="btn btn-primary">+ Add Your First Card</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .filters-section {
+        background: #f9fafb;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .filters-form {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-input, .filter-select {
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .search-input {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stock-card {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.2s;
+    }
+
+    .stock-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-color: #3b82f6;
+    }
+
+    .stock-card.archived {
+        opacity: 0.6;
+    }
+
+    .stock-card.priority-1 {
+        border-left: 4px solid #ef4444;
+    }
+
+    .stock-card.priority-2 {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .stock-card.priority-3 {
+        border-left: 4px solid #10b981;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .ticker {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .company-name {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .priority-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .priority-badge.priority-1 {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .priority-badge.priority-2 {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .priority-badge.priority-3 {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .card-price {
+        margin-bottom: 1rem;
+    }
+
+    .price {
+        font-size: 1.75rem;
+        font-weight: bold;
+        color: #059669;
+    }
+
+    .price-source {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-left: 0.5rem;
+    }
+
+    .price-empty {
+        color: #9ca3af;
+        font-style: italic;
+    }
+
+    .card-notes {
+        color: #4b5563;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tag {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        border: 1px solid;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-link {
+        color: #3b82f6;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state h2 {
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #9ca3af;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
