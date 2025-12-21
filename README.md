@@ -22,6 +22,14 @@ A web application for organizing and tracking U.S. stocks using a card-based int
 - **Weekly Email Digest** - Automated email summaries of notable movements
 - **Price Caching** - 15-minute cache to reduce API calls
 
+## Screenshots
+
+![Stock Cards Screenshot 1](docs/stock%20cards%201.png)
+
+![Stock Cards Screenshot 2](docs/stock%20cards%202.png)
+
+![Stock Cards Screenshot 3](docs/stock%20cards%203.png)
+
 ## Tech Stack
 
 - **Backend**: Django 5.2.6 (Python 3.14)
