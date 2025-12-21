@@ -60,8 +60,17 @@ A web application for organizing and tracking U.S. stocks using a card-based int
    ```
    This creates:
    - Test user: `testuser` / `testpass123`
-   - Admin user: `mohitg2` / `graingerlibrary`
    - Sample stock cards with live prices
+
+## Login Credentials
+
+### Internal Tester Account
+- **Username:** `mohitg2`
+- **Password:** `graingerlibrary`
+
+### Internal Guest Account
+- **Username:** `infoadmins`
+- **Password:** `uiucinfo`
 
 5. **Run the development server**
    ```bash
@@ -69,9 +78,10 @@ A web application for organizing and tracking U.S. stocks using a card-based int
    ```
 
 6. **Access the application**
-   - Main app: http://127.0.0.1:8000/
-   - Admin panel: http://127.0.0.1:8000/admin/
-   - Admin login: `mohitg2` / `graingerlibrary`
+   - **Live App (Deployed)**: https://stock-cards.onrender.com/
+   - Local development: http://127.0.0.1:8000/
+   - Admin panel: Add `/admin/` to either URL
+   - See **Login Credentials** section above for access
 
 ## Usage
 
@@ -126,6 +136,21 @@ If automatic price fetching fails:
 2. Click "Add Price Manually"
 3. Enter price and optional volume
 4. Price will be marked as "Manual" source
+
+## Bonus Features
+
+This project implements the following additional features beyond the base requirements:
+
+1. **External API Integration** - Real-time stock prices via Yahoo Finance API with intelligent caching
+2. **Weekly Email Digest** - Automated email summaries of stock movements (±5% threshold)
+3. **Color-Coded Tags** - Custom tag system with user-selectable colors for visual organization
+4. **Saved Filters** - Persistent filter combinations that users can save and reuse
+5. **Price History Tracking** - Historical snapshots with 7-day and 30-day change calculations
+6. **Archive System** - Soft-delete functionality to archive cards without losing data
+7. **Priority Levels** - High/Medium/Low priority classification for cards
+8. **Manual Price Fallback** - Graceful degradation when API is unavailable
+9. **Responsive Dashboard** - Mobile-friendly card-based UI
+10. **Multi-User Support** - Complete user isolation with per-user data scoping
 
 ## Project Structure
 

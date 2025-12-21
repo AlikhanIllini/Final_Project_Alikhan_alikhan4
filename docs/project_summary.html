@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Cards - Project Summary</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            color: #2c5aa0;
+            border-bottom: 3px solid #2c5aa0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1e3a5f;
+            margin-top: 30px;
+            border-left: 4px solid #2c5aa0;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #4a6fa5;
+        }
+        .header-info {
+            background: #f5f8fc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .feature-list {
+            background: #fafafa;
+            padding: 15px 25px;
+            border-radius: 5px;
+        }
+        .feature-list li {
+            margin: 10px 0;
+        }
+        .credentials {
+            background: #e8f4e8;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #2c5aa0;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .tech-badge {
+            display: inline-block;
+            background: #2c5aa0;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            margin: 3px;
+            font-size: 0.9em;
+        }
+        @media print {
+            body { margin: 0; padding: 20px; }
+            h1, h2 { page-break-after: avoid; }
+        }
+        @page {
+            margin: 0.5in;
+            margin-top: 0;
+            margin-bottom: 0;
+            size: letter;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Stock Cards - Project Summary</h1>
+
+    <div class="header-info">
+        <strong>Author:</strong> Alikhan Abzhanov<br>
+        <strong>Course:</strong> INFO 390: Commercial Web App Dev 1<br>
+        <strong>Date:</strong> December 2025<br>
+        <strong>GitHub:</strong> <a href="https://github.com/AlikhanIllini/Final_Project_Alikhan_alikhan4">github.com/AlikhanIllini/Final_Project_Alikhan_alikhan4</a><br>
+        <strong>Deployed App:</strong> Render.com
+    </div>
+
+    <h2>Project Overview</h2>
+    <p>Stock Cards is a web application for organizing and tracking U.S. stocks using a card-based interface. Each stock is represented as a card that stores core market data along with user-managed information such as notes, tags, and saved filters. The app is designed for clarity and structure, not real-time trading or advanced analysis.</p>
+
+    <h2>Login Credentials</h2>
+    <div class="credentials">
+        <strong>Internal Tester:</strong> mohitg2 / graingerlibrary<br>
+        <strong>Internal Guest:</strong> infoadmins / uiucinfo
+    </div>
+
+    <h2>Topics & Features Attempted</h2>
+
+    <h3>Core Django Concepts</h3>
+    <table>
+        <tr><th>Topic</th><th>Implementation</th></tr>
+        <tr><td>Models & ORM</td><td>Stock, StockCard, Tag, PriceSnapshot, SavedFilter models with relationships</td></tr>
+        <tr><td>Views & Templates</td><td>Class-based and function-based views with template inheritance</td></tr>
+        <tr><td>Forms</td><td>ModelForms for card creation, tag management, manual price entry</td></tr>
+        <tr><td>User Authentication</td><td>Registration, login, logout with @login_required decorator</td></tr>
+        <tr><td>URL Routing</td><td>Namespaced URLs with RESTful patterns</td></tr>
+        <tr><td>Admin Customization</td><td>Custom admin views for all models</td></tr>
+        <tr><td>Static Files</td><td>CSS styling and JavaScript for interactivity</td></tr>
+        <tr><td>Migrations</td><td>Database schema evolution</td></tr>
+    </table>
+
+    <h3>Bonus Features Implemented</h3>
+    <div class="feature-list">
+        <ol>
+            <li><strong>External API Integration</strong> - Real-time stock prices via Yahoo Finance (yfinance) with 15-minute caching</li>
+            <li><strong>Weekly Email Digest</strong> - Django management command for automated email summaries</li>
+            <li><strong>Color-Coded Tags</strong> - Custom tag system with user-selectable colors</li>
+            <li><strong>Saved Filters</strong> - Persistent filter combinations users can save and reuse</li>
+            <li><strong>Price History Tracking</strong> - Historical snapshots with 7-day and 30-day change calculations</li>
+            <li><strong>Archive System</strong> - Soft-delete functionality without losing data</li>
+            <li><strong>Priority Levels</strong> - High/Medium/Low classification for cards</li>
+            <li><strong>Manual Price Fallback</strong> - Graceful degradation when API is unavailable</li>
+            <li><strong>Responsive Dashboard</strong> - Mobile-friendly card-based UI</li>
+            <li><strong>Multi-User Support</strong> - Complete user isolation with per-user data scoping</li>
+        </ol>
+    </div>
+
+    <h2>Technology Stack</h2>
+    <p>
+        <span class="tech-badge">Python 3.14</span>
+        <span class="tech-badge">Django 5.2.6</span>
+        <span class="tech-badge">SQLite</span>
+        <span class="tech-badge">yfinance API</span>
+        <span class="tech-badge">HTML5</span>
+        <span class="tech-badge">CSS3</span>
+        <span class="tech-badge">JavaScript</span>
+        <span class="tech-badge">Git/GitHub</span>
+        <span class="tech-badge">Render (Deployment)</span>
+    </p>
+
+    <h2>Data Models</h2>
+    <table>
+        <tr><th>Model</th><th>Purpose</th><th>Key Fields</th></tr>
+        <tr><td>Stock</td><td>Store ticker symbols</td><td>ticker, company_name, sector</td></tr>
+        <tr><td>StockCard</td><td>User's stock tracking card</td><td>user, stock, notes, priority, target_price, is_archived</td></tr>
+        <tr><td>Tag</td><td>Custom categorization</td><td>user, name, color</td></tr>
+        <tr><td>PriceSnapshot</td><td>Historical price data</td><td>stock, price, volume, source, timestamp</td></tr>
+        <tr><td>SavedFilter</td><td>Saved filter combinations</td><td>user, name, filter_config, is_default</td></tr>
+    </table>
+
+    <h2>Project Structure</h2>
+    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">
+Final_Project_Alikhan_alikhan4/
+├── appserver/          # Django project settings
+├── cards/              # Main application
+│   ├── models.py       # Data models
+│   ├── views.py        # View logic
+│   ├── forms.py        # Form definitions
+│   ├── price_adapter.py # Stock API integration
+│   ├── templates/      # HTML templates
+│   ├── static/         # CSS/JS files
+│   └── management/     # Custom commands
+├── docs/               # Documentation
+├── manage.py           # Django management
+└── requirements.txt    # Dependencies
+    </pre>
+
+    <h2>Key Learnings</h2>
+    <ul>
+        <li>Django's MTV architecture provides excellent separation of concerns</li>
+        <li>External API integration requires robust error handling and fallback mechanisms</li>
+        <li>User experience matters as much as functionality</li>
+        <li>Proper data modeling upfront saves significant refactoring time</li>
+    </ul>
+
+    <h2>Challenges & Solutions</h2>
+    <table>
+        <tr><th>Challenge</th><th>Solution</th></tr>
+        <tr><td>API Rate Limiting</td><td>Implemented 15-minute caching + manual price fallback</td></tr>
+        <tr><td>Multi-User Data Isolation</td><td>Careful queryset filtering in all views</td></tr>
+        <tr><td>Email Configuration</td><td>Console backend for development, SMTP ready for production</td></tr>
+    </table>
+
+    <h2>Future Improvements</h2>
+    <ul>
+        <li>Real-time WebSocket updates for live price streaming</li>
+        <li>Portfolio analytics with charts (Chart.js/D3.js)</li>
+        <li>Export functionality (CSV/PDF)</li>
+        <li>Additional data sources (news, analyst ratings)</li>
+        <li>Mobile app using Django REST Framework</li>
+    </ul>
+
+</body>
+</html>
+
